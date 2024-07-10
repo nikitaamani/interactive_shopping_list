@@ -30,10 +30,22 @@ const ol = select ('ol');
 listen(document, 'DOMContentLoaded',displayItems);
 
 function displayItems(){
+ol.innerHTML ='';    
    shoppingList.forEach(createAListItem);
 }
 function createAListItem(item){
    const li = createAnElement('li');
    addText(li, item);
    appendChild(li, ol);
+}
+
+const form = select ('form');
+listen (form, 'submit',addItem);
+
+function addItem(event) {
+    event.preventDefault();
+shoppingList.push(event.target[0].value);
+    console.log(shoppingList);   
+    
+    displayItems();
 }
