@@ -1,3 +1,5 @@
+// Utility Functions for DOM Manipulation.
+
 function createAnElement(element) {
 	return document.createElement(element);
 }
@@ -22,7 +24,7 @@ function addAttribute(element, attribute, content) {
 	return element.setAttribute(attribute, content);
 }
 
-const shoppingList = ['Milk', 'Tea'];
+const shoppingList = [];
 
 const ol = select('ol');
 
@@ -37,6 +39,39 @@ function createAListItem(item) {
 	const li = createAnElement('li');
 	addText(li, item);
 	appendChild(li, ol);
+
+	listen(li, 'click', toggleChecked);
+
+	function toggleChecked() {
+		li.classList.toggle('checked');
+	}
+
+	listen(li, 'dblclick', editItem);
+
+	function editItem() {
+		addAttribute(li, 'contenteditable', true);
+		li.focus();
+	}
+
+	listen(li, 'blur', stopEditing);
+
+	function stopEditing(event) {
+		event.preventDefault();
+		event.target.removeAttribute('contenteditable');
+	}
+
+	listen(li, 'keydown', saveList);
+
+	function saveList(event) {
+		if (event.key === 'Enter') {
+			event.preventDefault();
+			event.target.blur();
+			console.log(shoppingList);
+			console.log(event.target.innerText);
+		}
+	}
+
+	console.log(shoppingList);
 }
 
 const form = select('form');
@@ -48,15 +83,14 @@ function addItem(event) {
 	shoppingList.push(event.target[0].value);
 
 	displayItems();
-    
-    event.target.reset();
+
+	event.target.reset();
 }
 
 const deleteButton = select('.delete');
-listen(deleteButton, "click", clearList);
-
+listen(deleteButton, 'click', clearList);
 
 function clearList() {
-    shoppingList.length = 0;
-    displayItems();
+	shoppingList.length = 0;
+	displayItems();
 }
