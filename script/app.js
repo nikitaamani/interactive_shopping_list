@@ -32,10 +32,10 @@ listen(document, 'DOMContentLoaded', displayItems);
 
 function displayItems() {
 	ol.innerHTML = '';
-	shoppingList.forEach(createAListItem);
+	shoppingList.map(createAListItem);
 }
 
-function createAListItem(item) {
+function createAListItem(item, index) {
 	const li = createAnElement('li');
 	addText(li, item);
 	appendChild(li, ol);
@@ -46,32 +46,31 @@ function createAListItem(item) {
 		li.classList.toggle('checked');
 	}
 
+	// Trigger editing when a user double clicks on each menu item.
 	listen(li, 'dblclick', editItem);
-
 	function editItem() {
 		addAttribute(li, 'contenteditable', true);
 		li.focus();
 	}
 
-	listen(li, 'blur', stopEditing);
+	// Listen when the item is not in focus and stop editing.
+	// This could happen when the cursor is clicked outside the list item or when(as will be done with the implementation of the keydown listener, when a user hits "Enter")
+	listen(li, 'blur', stopEditingTheItem);
 
-	function stopEditing(event) {
-		event.preventDefault();
-		event.target.removeAttribute('contenteditable');
+	function stopEditingTheItem() {
+		li.removeAttribute('contenteditable');
+		li.blur();
 	}
 
-	listen(li, 'keydown', saveList);
+	// Listen when a key is pressed. We want the content to stop being editable when a user hits "Enter"
+	listen(li, 'keydown', stopEditingWhenEnterIsPressed);
 
-	function saveList(event) {
+	function stopEditingWhenEnterIsPressed(event) {
 		if (event.key === 'Enter') {
-			event.preventDefault();
 			event.target.blur();
-			console.log(shoppingList);
-			console.log(event.target.innerText);
+			shoppingList[index] = event.target.innerText;
 		}
 	}
-
-	console.log(shoppingList);
 }
 
 const form = select('form');
